@@ -81,7 +81,7 @@ function Application(props: { app: IApplication }) {
         </CardBody>
         <Divider />
         <CardFooter className="flex flex-row justify-end">
-            <Button size="sm" color="primary" as={Link} href="/">Open</Button>
+            <Button size="sm" color="primary" as={Link} href={`/applications/${props.app.metadata.namespace}/${props.app.metadata.name}`}>Open</Button>
         </CardFooter>
     </Card>)
 }

@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^1.1.2",
     "@fluentui/react-icons": "^2.0.242",
     "@nextui-org/react": "^2.4.1",
     "framer-motion": "^11.2.10",
@@ -17,7 +18,8 @@
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "react-hook-form": "^7.51.5"
+    "react-hook-form": "^7.51.5",
+    "reactflow": "^11.11.3"
   },
   "devDependencies": {
     "typescript": "^5",
