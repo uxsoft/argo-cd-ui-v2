@@ -2,13 +2,63 @@
 
 import { authAtom } from "@/shared/state";
 import { useAtomValue } from "jotai";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { ApplicationDetailResponse, ResourceTreeResponse } from "./types";
 import { ResponseError, isResponseError } from "@/shared/types";
 import * as Server from "./server"
-import ReactFlow, { Background, Controls, Position } from "reactflow";
+import ReactFlow, { Background, Controls, Handle, Position } from "reactflow";
 import 'reactflow/dist/style.css';
 import dagre from "@dagrejs/dagre";
+import { AppStore24Filled, Box20Filled, Database20Filled, Link20Filled, Organization20Filled, Stack20Filled } from "@fluentui/react-icons";
+
+const Node = (content: (label: string) => React.ReactNode) => memo(({ data }: { data: { label: string } }) => {
+    return (
+        <div className="bg-foreground text-background p-2 text-xs rounded-sm">
+            <Handle
+                type="target"
+                position={Position.Left}
+            />
+            <div>
+                {content(data.label)}
+            </div>
+            <Handle
+                type="source"
+                position={Position.Right}
+            />
+        </div>
+    );
+});
+
+const ApplicationNode = Node((label) => (<>
+    <AppStore24Filled className="mr-1"/>
+    {label}
+</>))
+
+const IngressNode = Node((label) => (<>
+    <Link20Filled className="mr-1"/>
+    {label}
+</>))
+
+const ServiceNode = Node((label) => (<>
+    <Organization20Filled className="mr-1"/>
+    {label}
+</>))
+
+const PodNode = Node((label) => (<>
+    <Box20Filled className="mr-1"/>
+    {label}
+</>))
+
+const StatefulSetNode = Node((label) => (<>
+    <Stack20Filled className="mr-1"/>
+    {label}
+</>))
+
+const PersistentVolumeClaimNode = Node((label) => (<>
+    <Database20Filled className="mr-1"/>
+    {label}
+</>))
+
 
 
 function graph(input: ResourceTreeResponse | ResponseError, appName: string = "Application") {
@@ -95,23 +145,23 @@ function ResourceTree(props: { namespace: string, app: string }) {
 
     const { nodes, edges } = useMemo(() => graph(resourceTree, (appDetail as ApplicationDetailResponse)?.metadata?.name ?? "Application"), [resourceTree])
 
-    const initialNodes = [
-        {
-            id: '1',
-            data: { label: 'Hello' },
-            type: 'input',
-        },
-        {
-            id: '2',
-            data: { label: 'World' },
-            position: { x: 100, y: 100 },
-        },
-    ];
+    const nodeTypes = {
+        "Application": ApplicationNode,
+        "Ingress": IngressNode,
+        "Service": ServiceNode,
+        "Pod": PodNode,
+        "PersistentVolumeClaim": PersistentVolumeClaimNode,
+        "StatefulSet": StatefulSetNode
+    }
 
     return (<div>
         {(appDetail as ApplicationDetailResponse)?.metadata?.name}
         <div style={{ height: 800, width: "100%" }}>
-            <ReactFlow nodes={nodes} edges={edges} fitView>
+            <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                fitView
+                nodeTypes={nodeTypes}>
                 <Background />
                 <Controls />
             </ReactFlow>
