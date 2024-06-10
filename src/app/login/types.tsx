@@ -1,13 +1,11 @@
-export interface LoginError {
-    error: string
-    code: number
-    message: string
-}
+import { ResponseError } from "@/shared/server";
 
 export interface LoginResponse {
     token: string
 }
 
-export function isLoginSuccess(obj: LoginError | LoginResponse): obj is LoginResponse {    
-    return 'token' in obj;
+export interface UserInfoResponse {
+    loggedIn: boolean,
+    username: string,
+    iss: string
 }

@@ -1,13 +1,14 @@
 "use server"
 
-import { LoginError, LoginResponse } from "./types";
+import { ResponseError, host } from "@/shared/server";
+import { LoginResponse, UserInfoResponse } from "./types";
 
-export async function onLogin(form: { username: string, password: string }): Promise<LoginError | LoginResponse> {
+export async function postSession(form: { username: string, password: string }): Promise<ResponseError | LoginResponse> {
     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
     try {
         let response = await fetch(
-            "https://localhost:35921/api/v1/session", {
+            `${host}/api/v1/session`, {
             "headers": {
                 "accept": "*/*",
                 "content-type": "application/json",
@@ -20,6 +21,26 @@ export async function onLogin(form: { username: string, password: string }): Pro
         let result = await response.json()
         return result as LoginResponse
     } catch (error) {
-        return error as LoginError
+        return error as ResponseError
+    }
+}
+
+export async function getUserInfo(token: string): Promise<ResponseError | UserInfoResponse> {
+    process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+    try {
+        let response = await fetch(
+            `${host}/api/v1/session/userinfo`, {
+            "headers": {
+              "accept": "*/*",
+              "cookie": `argocd.token=${token}`,
+            },
+            "body": null,
+            "method": "GET"
+          });
+        let result = await response.json()
+        return result as UserInfoResponse
+    } catch (error) {
+        return error as ResponseError
     }
 }

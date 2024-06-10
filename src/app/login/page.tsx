@@ -2,33 +2,53 @@
 
 import { Button, Card, CardBody, CardHeader, Input } from "@nextui-org/react"
 import { useForm } from "react-hook-form"
-import { useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import * as Server from "./server"
-import { authState } from "../state"
+import { authAtom, userInfoAtom } from "../../shared/state"
 import { useRouter } from 'next/navigation'
 import { useState } from "react";
-import { isLoginSuccess } from "./types";
+import { isResponseError } from "@/shared/types";
 
-export default function Home() {
+export default function LoginPage() {
 
     const loginForm = useForm()
-    const setAuthState = useSetAtom(authState)
+    const setAuth = useSetAtom(authAtom)
+    const setUserInfo = useSetAtom(userInfoAtom)
+
     const router = useRouter()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
 
-    function onLogin(form: { username: string, password: string }) {
-        setError("")
-        setLoading(true)
-        Server.onLogin(form).then((r) => {
-            if (isLoginSuccess(r)) {
-                setAuthState(r)
-                router.push("/")
-            } else {
-                setError(r.message)
+    async function onLogin(form: { username: string, password: string }) {
+        try {
+            setError("")
+            setLoading(true)
+
+            let sessionResponse = await Server.postSession(form)
+
+            if (isResponseError(sessionResponse)) {
+                throw sessionResponse
             }
+
+            setAuth(sessionResponse)
+
+            let userInfoResponse = await Server.getUserInfo(sessionResponse.token);
+            if (isResponseError(userInfoResponse)) {
+                throw userInfoResponse
+            }
+
+            setUserInfo(userInfoResponse)
+
+            // TODO Save session info to local storage
+            router.push("/")
+
             setLoading(false)
-        }).catch((e) => console.error(e));
+
+        } catch (error) {
+            console.error(error)
+            setError(error.message)
+            setLoading(false)
+        }
     }
 
     return (
