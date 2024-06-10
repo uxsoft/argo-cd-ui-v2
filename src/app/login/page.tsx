@@ -11,7 +11,12 @@ import { isResponseError } from "@/shared/types";
 
 export default function LoginPage() {
 
-    const loginForm = useForm()
+    const loginForm = useForm({
+        defaultValues: {
+            username: "",
+            password: ""
+        }
+    })
     const setAuth = useSetAtom(authAtom)
     const setUserInfo = useSetAtom(userInfoAtom)
 
@@ -44,9 +49,9 @@ export default function LoginPage() {
 
             setLoading(false)
 
-        } catch (error) {
+        } catch (error: any) {
             console.error(error)
-            setError(error.message)
+            setError(error?.message)
             setLoading(false)
         }
     }
@@ -59,8 +64,17 @@ export default function LoginPage() {
                 </CardHeader>
                 <CardBody>
                     <form className="flex flex-col gap-4" onSubmit={loginForm.handleSubmit(onLogin)}>
-                        <Input {...loginForm.register("username")} placeholder="Username" />
-                        <Input {...loginForm.register("password")} placeholder="Password" type="password" />
+                        <Input
+                            {...loginForm.register("username", { required: "Username is required" })}
+                            isInvalid={!!loginForm.formState.errors.username}
+                            errorMessage={loginForm.formState.errors.username?.message}
+                            placeholder="Username" />
+                        <Input
+                            {...loginForm.register("password", { required: "Password is required" })}
+                            isInvalid={!!loginForm.formState.errors.password}
+                            errorMessage={loginForm.formState.errors.username?.message}
+                            placeholder="Password"
+                            type="password" />
                         <div className="text-red-500">
                             {error}
                         </div>

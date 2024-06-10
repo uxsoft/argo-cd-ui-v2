@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fluentui/react-icons": "^2.0.242",
     "@nextui-org/react": "^2.4.1",
     "framer-motion": "^11.2.10",
     "jotai": "^2.8.3",

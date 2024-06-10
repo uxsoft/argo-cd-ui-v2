@@ -4,10 +4,12 @@ import { userInfoAtom } from "@/shared/state";
 import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/react"
 import { useAtomValue } from "jotai";
 import { Version } from "@/components/version";
+import { usePathname } from "next/navigation";
 
 export function Header() {
     const userInfo = useAtomValue(userInfoAtom)
-
+    const pathname = usePathname();
+    
     return (<>
         <Navbar isBordered>
             <NavbarMenuToggle className="sm:hidden" />
@@ -16,12 +18,12 @@ export function Header() {
                 <Version/>
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4">
-                <NavbarItem isActive={window.location.pathname === "/dashboard"}>
-                    <Link href="/dashboard">
-                        Dashboard
+                <NavbarItem isActive={pathname === "/applications"}>
+                    <Link href="/applications">
+                        Applications
                     </Link>
                 </NavbarItem>
-                <NavbarItem isActive={window.location.pathname === "/repositories"}>
+                <NavbarItem isActive={pathname === "/repositories"}>
                     <Link href="/repositories">
                         Repositories
                     </Link>
@@ -66,7 +68,10 @@ export function Header() {
             </NavbarContent>
             <NavbarMenu>
                 <NavbarMenuItem>
-                    <Link href="/dashboard">Dashboard</Link>
+                    <Link href="/applications">Applications</Link>
+                </NavbarMenuItem>
+                <NavbarMenuItem>
+                    <Link href="/repositories">Repositories</Link>
                 </NavbarMenuItem>
             </NavbarMenu>
         </Navbar>

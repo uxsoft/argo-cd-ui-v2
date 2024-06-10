@@ -1,10 +1,10 @@
 "use client"
 
-import { VersionResponse } from "@/app/dashboard/types";
+import { VersionResponse } from "@/app/applications/types";
 import { authAtom } from "@/shared/state";
 import { ResponseError, isResponseError } from "@/shared/types";
 import { useAtomValue } from "jotai";
-import * as Server from "../app/dashboard/server";
+import * as Server from "../app/applications/server";
 import { useState, useEffect } from "react";
 
 export function Version() {

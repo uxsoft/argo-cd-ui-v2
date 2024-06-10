@@ -1,7 +1,8 @@
 "use server"
 
-import { ResponseError, host } from "@/shared/server";
+import { host } from "@/shared/server";
 import { ApplicationsResponse, ClustersResponse, SettingsResponse, VersionResponse } from "./types";
+import { ResponseError } from "@/shared/types";
 
 export async function fetchSettings(token: string): Promise<ResponseError | SettingsResponse> {
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;

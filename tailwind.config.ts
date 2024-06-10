@@ -12,7 +12,22 @@ const config: Config = {
   },
   darkMode: "class",
   plugins: [nextui({
-    defaultTheme: "dark"
+    defaultTheme: "dark",
+    themes: {
+      light: {},
+      dark: {
+        colors: {
+          primary: {
+            DEFAULT: "#ecedee",
+            foreground: "#000",
+          },
+          secondary: {
+            DEFAULT: "#37474f",
+            foreground: "#fff",
+          }
+        }
+      }
+    }
   })],
 };
 export default config;
