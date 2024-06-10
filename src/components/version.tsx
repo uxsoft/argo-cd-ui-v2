@@ -25,7 +25,7 @@ export function Version() {
     return (<div className="mt-2">
         <img alt="argo" src="/images/argologo.svg" width={60} height={24} className="invert mb-[-6px]" />
         <span className="text-xs text-gray-500">
-            {version.Version}
+            {version.Version}&nbsp;
         </span>
     </div>)
 }

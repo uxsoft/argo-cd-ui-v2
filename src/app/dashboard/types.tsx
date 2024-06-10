@@ -80,22 +80,20 @@ export interface ApplicationsResponse {
                 namespace: string
             },
             spec: {
-                "source": {
-                    "repoURL": "https://github.com/uxsoft-rs/infra-helm-charts",
-                    "path": "docker-storage-web",
-                    "targetRevision": "HEAD",
-                    "helm": {
-                        "valueFiles": [
-                            "values.aladin-prod.yaml"
-                        ]
+                source: {
+                    repoURL: string,
+                    path: string,
+                    targetRevision: "HEAD",
+                    helm: {
+                        valueFiles: string[]
                     }
                 },
-                "destination": {
-                    "server": "https://kubernetes.default.svc",
-                    "namespace": "uxsoft-aladin-prod"
+                destination: {
+                    server: string,
+                    namespace: string
                 },
-                "project": "default",
-                "syncPolicy": {
+                project: string,
+                syncPolicy: {
                     "automated": {
                         "prune": true,
                         "selfHeal": true
@@ -111,130 +109,59 @@ export interface ApplicationsResponse {
                 }
             },
             status: {
-                "health": {
-                    "status": "Healthy"
+                health: {
+                    status: "Healthy"
                 },
-                "operationState": {
-                    "finishedAt": "2024-05-31T18:38:02Z",
-                    "operation": {
-                        "sync": {
-                            "resources": [
+                operationState: {
+                    finishedAt: "2024-05-31T18:38:02Z",
+                    operation: {
+                        sync: {
+                            resources: [
                                 {
-                                    "group": "apps",
-                                    "version": "v1",
-                                    "kind": "Deployment",
-                                    "namespace": "uxsoft-aladin-prod",
-                                    "name": "aladin-prod",
-                                    "status": "Pruned",
-                                    "message": "pruned",
-                                    "hookPhase": "Succeeded",
-                                    "syncPhase": "Sync"
+                                    group: string,
+                                    version: string,
+                                    kind: string,
+                                    namespace: string,
+                                    name: string,
+                                    status: string,
+                                    message: string,
+                                    hookPhase: string,
+                                    syncPhase: string
                                 },
-                                {
-                                    "group": "",
-                                    "version": "v1",
-                                    "kind": "PersistentVolumeClaim",
-                                    "namespace": "uxsoft-aladin-prod",
-                                    "name": "aladin-prod-pvc",
-                                    "status": "Pruned",
-                                    "message": "pruned",
-                                    "hookPhase": "Succeeded",
-                                    "syncPhase": "Sync"
-                                },
-                                {
-                                    "group": "",
-                                    "version": "v1",
-                                    "kind": "Service",
-                                    "namespace": "uxsoft-aladin-prod",
-                                    "name": "aladin-prod-service",
-                                    "status": "Synced",
-                                    "message": "service/aladin-prod-service configured. Warning: resource services/aladin-prod-service is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by  apply.  apply should only be used on resources created declaratively by either  create --save-config or  apply. The missing annotation will be patched automatically.",
-                                    "hookPhase": "Running",
-                                    "syncPhase": "Sync"
-                                },
-                                {
-                                    "group": "apps",
-                                    "version": "v1",
-                                    "kind": "StatefulSet",
-                                    "namespace": "uxsoft-aladin-prod",
-                                    "name": "aladin-prod",
-                                    "status": "Synced",
-                                    "message": "statefulset.apps/aladin-prod configured. Warning: resource statefulsets/aladin-prod is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by  apply.  apply should only be used on resources created declaratively by either  create --save-config or  apply. The missing annotation will be patched automatically.",
-                                    "hookPhase": "Running",
-                                    "syncPhase": "Sync"
-                                },
-                                {
-                                    "group": "networking.k8s.io",
-                                    "version": "v1",
-                                    "kind": "Ingress",
-                                    "namespace": "uxsoft-aladin-prod",
-                                    "name": "aladin-prod",
-                                    "status": "Synced",
-                                    "message": "ingress.networking.k8s.io/aladin-prod configured. Warning: resource ingresses/aladin-prod is missing the kubectl.kubernetes.io/last-applied-configuration annotation which is required by  apply.  apply should only be used on resources created declaratively by either  create --save-config or  apply. The missing annotation will be patched automatically.",
-                                    "hookPhase": "Running",
-                                    "syncPhase": "Sync"
-                                }
                             ],
-                            "revision": "b9526b6641ea13f5ba5715e566fef664d3216dd2",
+                            "revision": string,
                             "source": {
-                                "repoURL": "https://github.com/uxsoft-rs/infra-helm-charts",
-                                "path": "docker-storage-web",
-                                "targetRevision": "HEAD",
-                                "helm": {
-                                    "valueFiles": [
-                                        "values.aladin-prod.yaml"
-                                    ]
+                                repoURL: string,
+                                path: string,
+                                targetRevision: "HEAD",
+                                helm: {
+                                    "valueFiles": string[]
                                 }
                             }
                         }
                     },
-                    "phase": "Succeeded"
+                    phase: "Succeeded"
                 },
-                "resources": [
+                resources: [
                     {
-                        "version": "v1",
-                        "kind": "Service",
-                        "namespace": "uxsoft-aladin-prod",
-                        "name": "aladin-prod-service",
-                        "status": "Synced",
-                        "health": {
-                            "status": "Healthy"
-                        }
-                    },
-                    {
-                        "group": "apps",
-                        "version": "v1",
-                        "kind": "StatefulSet",
-                        "namespace": "uxsoft-aladin-prod",
-                        "name": "aladin-prod",
-                        "status": "Synced",
-                        "health": {
-                            "status": "Healthy",
-                            "message": "partitioned roll out complete: 1 new pods have been updated..."
-                        }
-                    },
-                    {
-                        "group": "networking.k8s.io",
-                        "version": "v1",
-                        "kind": "Ingress",
-                        "namespace": "uxsoft-aladin-prod",
-                        "name": "aladin-prod",
-                        "status": "Synced",
-                        "health": {
-                            "status": "Healthy"
+                        group: string,
+                        version: string,
+                        kind: string,
+                        namespace: string,
+                        name: string,
+                        status: "Synced",
+                        health: {
+                            status: "Healthy",
+                            message: string
                         }
                     }
                 ],
-                "summary": {
-                    "externalURLs": [
-                        "http://aladin.uxsoft.cz/"
-                    ],
-                    "images": [
-                        "ghcr.io/uxsoft/aladin:2"
-                    ]
+                summary: {
+                    externalURLs: string[],
+                    images: [string]
                 },
-                "sync": {
-                    "status": "Synced"
+                sync: {
+                    status: "Synced"
                 }
             }
         }
@@ -244,5 +171,6 @@ export interface ApplicationsResponse {
     }
 }
 
-export interface ProjectsResponse { 
-    items: [{ "metadata": { "name": "default" } }] }
+export interface ProjectsResponse {
+    items: [{ "metadata": { "name": "default" } }]
+}

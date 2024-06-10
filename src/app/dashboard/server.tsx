@@ -37,7 +37,6 @@ export async function fetchVersion(token: string): Promise<ResponseError | Versi
     });
 
     let result = await response.json()
-    console.log(result)
 
     return result as VersionResponse
   } catch (error) {

@@ -16,9 +16,14 @@ export function Header() {
                 <Version/>
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4">
-                <NavbarItem>
+                <NavbarItem isActive={window.location.pathname === "/dashboard"}>
                     <Link href="/dashboard">
                         Dashboard
+                    </Link>
+                </NavbarItem>
+                <NavbarItem isActive={window.location.pathname === "/repositories"}>
+                    <Link href="/repositories">
+                        Repositories
                     </Link>
                 </NavbarItem>
                 {/* <NavbarItem isActive>
