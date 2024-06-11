@@ -36,9 +36,9 @@ export default function NewProjectPage() {
         }
     }
 
-    return (<Card>
+    return (<Card className="m-4">
         <CardHeader>
-            Connect to a repository using HTTPS
+            Create a new Project
         </CardHeader>
         <CardBody>
 

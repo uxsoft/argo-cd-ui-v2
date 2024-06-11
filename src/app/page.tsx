@@ -9,7 +9,7 @@ export default function Home() {
   const router = useRouter();
 
   if (auth.token) {
-    router.push("/dashboard")
+    router.push("/applications")
   } else {
     router.push("/login")
   }

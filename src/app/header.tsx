@@ -1,14 +1,25 @@
 "use client"
 
-import { userInfoAtom } from "@/shared/state";
+import { authAtom, userInfoAtom } from "@/shared/state";
 import { Avatar, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger, Link, Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenu, NavbarMenuItem, NavbarMenuToggle } from "@nextui-org/react"
-import { useAtomValue } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { Version } from "@/components/version";
 import { usePathname } from "next/navigation";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { useRouter } from "next/navigation";
 
 export function Header() {
     const userInfo = useAtomValue(userInfoAtom)
     const pathname = usePathname();
+    const setAuth = useSetAtom(authAtom)
+    const setUserInfo = useSetAtom(userInfoAtom)
+    const router = useRouter()
+
+    function logout() {
+        setAuth({ token: "" })
+        setUserInfo({ loggedIn: false, username: "", iss: "" })
+        router.push("/login")
+    }
 
     return (
         <Navbar isBordered>
@@ -36,6 +47,9 @@ export function Header() {
             </NavbarContent>
             <NavbarContent justify="end">
                 <NavbarItem>
+                    <ThemeSwitcher />
+                </NavbarItem>
+                <NavbarItem>
                     {userInfo.loggedIn ? <>
                         <Dropdown placement="bottom-end">
                             <DropdownTrigger>
@@ -53,7 +67,7 @@ export function Header() {
                                     <span className="font-semibold">{userInfo.username}</span>
                                 </DropdownItem>
                                 <DropdownItem key="change_password">Change Password</DropdownItem>
-                                <DropdownItem key="logout" color="danger">
+                                <DropdownItem key="logout" color="danger" onClick={logout}>
                                     Log Out
                                 </DropdownItem>
                             </DropdownMenu>
