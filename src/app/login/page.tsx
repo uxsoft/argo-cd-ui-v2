@@ -72,7 +72,7 @@ export default function LoginPage() {
                         <Input
                             {...loginForm.register("password", { required: "Password is required" })}
                             isInvalid={!!loginForm.formState.errors.password}
-                            errorMessage={loginForm.formState.errors.username?.message}
+                            errorMessage={loginForm.formState.errors.password?.message}
                             placeholder="Password"
                             type="password" />
                         <div className="text-red-500">

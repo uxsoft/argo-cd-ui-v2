@@ -17,6 +17,11 @@ export function Header() {
                 <img alt="logo" src="/images/logo.png" width={32} height={32} className="mr-2" />
                 <Version />
             </NavbarBrand>
+            <NavbarItem isActive={pathname === "/projects"}>
+                <Link href="/projects">
+                    Projects
+                </Link>
+            </NavbarItem>
             <NavbarContent className="hidden sm:flex gap-4">
                 <NavbarItem isActive={pathname === "/applications"}>
                     <Link href="/applications">
@@ -28,16 +33,6 @@ export function Header() {
                         Repositories
                     </Link>
                 </NavbarItem>
-                {/* <NavbarItem isActive>
-                    <Link href="#" aria-current="page" color="warning">
-                        Customers
-                    </Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" href="#">
-                        Integrations
-                    </Link>
-                </NavbarItem> */}
             </NavbarContent>
             <NavbarContent justify="end">
                 <NavbarItem>
@@ -72,6 +67,9 @@ export function Header() {
                 </NavbarMenuItem>
                 <NavbarMenuItem>
                     <Link href="/repositories">Repositories</Link>
+                </NavbarMenuItem>
+                <NavbarMenuItem>
+                    <Link href="/projects">Repositories</Link>
                 </NavbarMenuItem>
             </NavbarMenu>
         </Navbar>)
