@@ -3,13 +3,15 @@
 import { authAtom } from "@/shared/state";
 import { useAtomValue } from "jotai";
 import { memo, useEffect, useMemo, useState } from "react";
-import { ApplicationDetailResponse, ResourceTreeResponse } from "./types";
 import { ResponseError, isResponseError } from "@/shared/types";
 import * as Server from "./server"
 import ReactFlow, { Background, Controls, Handle, Position } from "reactflow";
 import 'reactflow/dist/style.css';
 import dagre from "@dagrejs/dagre";
-import { AppStore24Filled, Box20Filled, Database20Filled, Link20Filled, Organization20Filled, Stack20Filled } from "@fluentui/react-icons";
+import { AppStore24Filled, ArrowRoutingRectangleMultiple20Filled, Box20Filled, ControlButton20Filled, Database20Filled, Link20Filled, Organization20Filled, Stack20Filled } from "@fluentui/react-icons";
+import { Card, CardBody, CardHeader, Divider, Tooltip } from "@nextui-org/react";
+import { Application, ApplicationTree } from "@/shared/argocd";
+import { ComparisonStatusIcon, HealthStatusIcon } from "@/components/argo-utils";
 
 const Node = (content: (label: string) => React.ReactNode) => memo(({ data }: { data: { label: string } }) => {
     return (
@@ -30,38 +32,62 @@ const Node = (content: (label: string) => React.ReactNode) => memo(({ data }: { 
 });
 
 const ApplicationNode = Node((label) => (<>
-    <AppStore24Filled className="mr-1"/>
+    <Tooltip content="Application">
+        <AppStore24Filled className="mr-1" />
+    </Tooltip>
     {label}
 </>))
 
 const IngressNode = Node((label) => (<>
-    <Link20Filled className="mr-1"/>
+    <Tooltip content="Ingress">
+        <Link20Filled className="mr-1" />
+    </Tooltip>
     {label}
 </>))
 
 const ServiceNode = Node((label) => (<>
-    <Organization20Filled className="mr-1"/>
+    <Tooltip content="Service">
+        <Organization20Filled className="mr-1" />
+    </Tooltip>
     {label}
 </>))
 
 const PodNode = Node((label) => (<>
-    <Box20Filled className="mr-1"/>
+    <Tooltip content="Pod">
+        <Box20Filled className="mr-1" />
+    </Tooltip>
     {label}
 </>))
 
 const StatefulSetNode = Node((label) => (<>
-    <Stack20Filled className="mr-1"/>
+    <Tooltip content="StatefulSet">
+        <Stack20Filled className="mr-1" />
+    </Tooltip>
     {label}
 </>))
 
 const PersistentVolumeClaimNode = Node((label) => (<>
-    <Database20Filled className="mr-1"/>
+    <Tooltip content="PersistentVolumeClaim">
+        <Database20Filled className="mr-1" />
+    </Tooltip>
     {label}
 </>))
 
+const EndpointsNode = Node((label) => (<>
+    <Tooltip content="Endpoints">
+        <ArrowRoutingRectangleMultiple20Filled className="mr-1" />
+    </Tooltip>
+    {label}
+</>))
 
+const ControllerRevisionNode = Node((label) => (<>
+    <Tooltip content="ControllerRevision">
+        <ControlButton20Filled className="mr-1" />
+    </Tooltip>
+    {label}
+</>))
 
-function graph(input: ResourceTreeResponse | ResponseError, appName: string = "Application") {
+function graph(input: ApplicationTree | ResponseError, appName: string = "Application") {
     if (isResponseError(input) || !input.nodes) {
         return ({ nodes: [], edges: [] })
     }
@@ -127,23 +153,23 @@ function graph(input: ResourceTreeResponse | ResponseError, appName: string = "A
     return ({ nodes: nodes, edges: edges })
 }
 
-function ResourceTree(props: { namespace: string, app: string }) {
+export default function ResourceTreePage({ params }: { params: { namespace: string, app: string } }) {
     const auth = useAtomValue(authAtom)
-    const [resourceTree, setResourceTree] = useState({} as ResourceTreeResponse | ResponseError)
-    const [appDetail, setAppDetail] = useState({} as ApplicationDetailResponse | ResponseError)
+    const [resourceTree, setResourceTree] = useState({} as ApplicationTree | ResponseError)
+    const [appDetail, setAppDetail] = useState({} as Application | ResponseError)
     useEffect(() => {
         if (auth.token) {
-            Server.getResourceTree(auth.token, props.app, props.namespace)
+            Server.getResourceTree(auth.token, params.app, params.namespace)
                 .then(setResourceTree)
                 .catch(console.error)
 
-            Server.getApplicationDetails(auth.token, props.app, props.namespace)
+            Server.getApplicationDetails(auth.token, params.app, params.namespace)
                 .then(setAppDetail)
                 .catch(console.error)
         }
     }, [auth.token]);
 
-    const { nodes, edges } = useMemo(() => graph(resourceTree, (appDetail as ApplicationDetailResponse)?.metadata?.name ?? "Application"), [resourceTree])
+    const { nodes, edges } = useMemo(() => graph(resourceTree, (appDetail as Application)?.metadata?.name ?? "Application"), [resourceTree])
 
     const nodeTypes = {
         "Application": ApplicationNode,
@@ -151,13 +177,59 @@ function ResourceTree(props: { namespace: string, app: string }) {
         "Service": ServiceNode,
         "Pod": PodNode,
         "PersistentVolumeClaim": PersistentVolumeClaimNode,
-        "StatefulSet": StatefulSetNode
+        "StatefulSet": StatefulSetNode,
+        "Endpoints": EndpointsNode,
+        "ControllerRevision": ControllerRevisionNode
     }
 
-    return (<div>
-        {(appDetail as ApplicationDetailResponse)?.metadata?.name}
-        <div style={{ height: 800, width: "100%" }}>
+    return (
+        <div className="h-full flex flex-col">
+            <Card className="m-4">
+                <CardBody className="flex flex-row items-center justify-evenly overflow-hidden">
+                    <div className="p-3 flex flex-col">
+                        <div className="text-sm">
+                            App Health
+                        </div>
+                        <div className="text-xl">
+                            <HealthStatusIcon state={(appDetail as Application)?.status?.health} />
+                            {(appDetail as Application)?.status?.health.status ?? "Unknown"}
+                        </div>
+                    </div>
+                    <Divider orientation="vertical" />
+                    <div className="p-3 flex flex-col">
+                        <div className="text-sm">
+                            Sync Status
+                        </div>
+                        <div className="text-xl flex items-center">
+                            <ComparisonStatusIcon status={(appDetail as Application)?.status?.sync.status} label={true} />
+                        </div>
+                        <div className="text-xs mt-2">
+                            {(appDetail as Application)?.spec?.syncPolicy?.automated ? 'Auto sync is enabled.' : 'Auto sync is not enabled.'}
+                        </div>
+                    </div>
+                    <Divider orientation="vertical" />
+                    <div className="p-3 flex flex-col">
+                        <div className="text-sm">
+                            Last Sync
+                        </div>
+                        <div className="text-xl">
+                            {/* <AppHealthStatus app={appDetail as Application} /> */}
+                        </div>
+                    </div>
+                    <Divider orientation="vertical" />
+                    <div className="p-3 flex flex-col">
+                        <div className="text-sm">
+                            Revision
+                        </div>
+                        <div className="text-xl">
+                            {/* <AppHealthStatus app={appDetail as Application} /> */}
+                        </div>
+                    </div>
+                </CardBody>
+
+            </Card>
             <ReactFlow
+                className="grow h-full w-full"
                 nodes={nodes}
                 edges={edges}
                 fitView
@@ -165,14 +237,5 @@ function ResourceTree(props: { namespace: string, app: string }) {
                 <Background />
                 <Controls />
             </ReactFlow>
-        </div>
-    </div>)
-}
-
-export default function ApplicationPage({ params }: { params: { namespace: string, app: string } }) {
-    return (<div>
-        {params.namespace}
-        {params.app}
-        <ResourceTree namespace={params.namespace} app={params.app} />
-    </div>)
+        </div>)
 }

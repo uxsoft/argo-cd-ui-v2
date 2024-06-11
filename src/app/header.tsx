@@ -9,13 +9,13 @@ import { usePathname } from "next/navigation";
 export function Header() {
     const userInfo = useAtomValue(userInfoAtom)
     const pathname = usePathname();
-    
-    return (<>
+
+    return (
         <Navbar isBordered>
             <NavbarMenuToggle className="sm:hidden" />
             <NavbarBrand>
-                <img alt="logo" src="/images/logo.png" width={32} height={32} className="mr-2"/>
-                <Version/>
+                <img alt="logo" src="/images/logo.png" width={32} height={32} className="mr-2" />
+                <Version />
             </NavbarBrand>
             <NavbarContent className="hidden sm:flex gap-4">
                 <NavbarItem isActive={pathname === "/applications"}>
@@ -74,7 +74,5 @@ export function Header() {
                     <Link href="/repositories">Repositories</Link>
                 </NavbarMenuItem>
             </NavbarMenu>
-        </Navbar>
-
-    </>)
+        </Navbar>)
 }

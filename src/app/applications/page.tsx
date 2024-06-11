@@ -4,48 +4,20 @@ import { useEffect, useState } from "react"
 import * as Server from "./server"
 import { useAtomValue } from "jotai"
 import { authAtom } from "@/shared/state"
-import { ApplicationsResponse, IApplication } from "./types"
 import { ResponseError, isResponseError } from "@/shared/types"
 import { Button, Card, CardBody, CardFooter, CardHeader, Divider, Link, Spinner } from "@nextui-org/react"
-import { ArrowSyncCheckmark20Filled, Heart16Filled } from "@fluentui/react-icons"
+import { ComparisonStatusIcon, HealthStatusIcon } from "@/components/argo-utils"
+import { Application, ApplicationList } from "@/shared/argocd"
+import { Add20Filled } from "@fluentui/react-icons"
 
-function AppHealthStatus(props: { app: IApplication }) {
-    switch (props.app.status.health.status) {
-        case "Healthy":
-            return (<span>
-                <Heart16Filled className="text-success mr-1" />
-                Healthy
-            </span>)
-        default:
-            return (<span className="text-warning">
-                {props.app.status.health.status}
-            </span>)
-    }
-}
-
-function AppSyncStatus(props: { app: IApplication }) {
-    switch (props.app.status.sync.status) {
-        case "Synced":
-            return (<span>
-                <ArrowSyncCheckmark20Filled className="text-success mr-1" />
-                Synced
-            </span>)
-        default:
-            return (<span className="text-warning">
-                {props.app.status.sync.status}
-            </span>)
-    }
-}
-
-function Application(props: { app: IApplication }) {
+function ApplicationCard(props: { app: Application }) {
     return (<Card key={props.app.metadata.name} className="">
         <CardHeader>
-            {/* <Avatar color="success" /> */}
-            <div className="flex flex-col ml-4">
-                <p className="text-md">{props.app.metadata.name}</p>
+            <div className="flex flex-col">
+                <p className="text-lg">{props.app.metadata.name}</p>
                 <div className="text-small text-default-500 flex flex-row gap-2">
-                    <AppHealthStatus app={props.app} />
-                    <AppSyncStatus app={props.app} />
+                    <HealthStatusIcon state={props.app.status.health} />
+                    <ComparisonStatusIcon status={props.app.status.sync.status} />
                 </div>
             </div>
         </CardHeader>
@@ -54,11 +26,11 @@ function Application(props: { app: IApplication }) {
             <table>
                 <tr>
                     <th>External URLs:</th>
-                    <td>{props.app.status.summary.externalURLs.map((url) => (<Link className="text-sm" showAnchorIcon isExternal underline="hover" href={url}>{url}</Link>))}</td>
+                    <td>{props.app.status.summary?.externalURLs?.map((url) => (<Link className="text-sm" showAnchorIcon isExternal underline="hover" href={url}>{url}</Link>))}</td>
                 </tr>
                 <tr>
                     <th>Images:</th>
-                    <td>{props.app.status.summary.images.join(",")}</td>
+                    <td>{props.app.status.summary?.images?.join(",")}</td>
                 </tr>
                 <tr>
                     <th>Namespace:</th>
@@ -70,40 +42,57 @@ function Application(props: { app: IApplication }) {
                 </tr>
                 <tr>
                     <th>Created At:</th>
-                    <td>{new Date(Date.parse(props.app.metadata.creationTimestamp)).toLocaleString()}</td>
+                    <td>{new Date(Date.parse(props.app.metadata.creationTimestamp ?? "")).toLocaleString()}</td>
                 </tr>
                 <tr>
                     <th>Last Sync:</th>
-                    <td>{new Date(Date.parse(props.app.status.operationState.finishedAt)).toLocaleString()}</td>
+                    <td>{new Date(Date.parse(props.app.status.operationState?.finishedAt ?? "")).toLocaleString()}</td>
                 </tr>
 
             </table>
         </CardBody>
         <Divider />
         <CardFooter className="flex flex-row justify-end">
-            <Button size="sm" color="primary" as={Link} href={`/applications/${props.app.metadata.namespace}/${props.app.metadata.name}`}>Open</Button>
+            <Button
+                size="sm"
+                color="secondary"
+                as={Link}
+                href={`/applications/${props.app.metadata.namespace}/${props.app.metadata.name}`}>
+                Open
+            </Button>
         </CardFooter>
     </Card>)
 }
 
 export default function ApplicationsPage() {
     const auth = useAtomValue(authAtom)
-    const [apps, setApps] = useState({} as ApplicationsResponse | ResponseError)
+    const [apps, setApps] = useState({} as ApplicationList | ResponseError)
     useEffect(() => {
         if (auth.token) {
-            Server.fetchApplications(auth.token)
+            Server.listApplications(auth.token)
                 .then(setApps)
                 .catch(console.error)
         }
     }, [auth.token]);
 
     if (!isResponseError(apps) && apps?.items) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 m-4">
+        return (<div className="flex flex-col gap-4 m-4">
+            <div className="flex justify-end gap-3">
+                <Button
+                    href="/applications/new"
+                    as={Link}
+                    color="primary"
+                    endContent={<Add20Filled />}
+                    size="sm">
+                    Add New
+                </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {apps?.items?.map((item) => (
-                    <Application app={item} />
+                    <ApplicationCard app={item} />
                 ))}
             </div>
+        </div>
         )
     } else {
         return (<div className="h-[200px] grid content-center">

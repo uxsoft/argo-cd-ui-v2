@@ -2,9 +2,9 @@
 
 import { host } from "@/shared/server";
 import { ResponseError } from "@/shared/types";
-import { ApplicationDetailResponse, ResourceTreeResponse } from "./types";
+import { Application, ApplicationTree } from "@/shared/argocd";
 
-export async function getResourceTree(token: string, name: string, namespace: string): Promise<ResponseError | ResourceTreeResponse> {
+export async function getResourceTree(token: string, name: string, namespace: string): Promise<ResponseError | ApplicationTree> {
     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
   
     try {
@@ -19,14 +19,14 @@ export async function getResourceTree(token: string, name: string, namespace: st
   
       let result = await response.json()
   
-      return result as ResourceTreeResponse
+      return result as ApplicationTree
     } catch (error) {
       console.error(error)
       return error as ResponseError
     }
   }
 
-  export async function getApplicationDetails(token: string, name: string, namespace: string): Promise<ResponseError | ApplicationDetailResponse> {
+  export async function getApplicationDetails(token: string, name: string, namespace: string): Promise<ResponseError | Application> {
     process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
   
     try {
@@ -41,7 +41,7 @@ export async function getResourceTree(token: string, name: string, namespace: st
   
       let result = await response.json()
   
-      return result as ApplicationDetailResponse
+      return result as Application
     } catch (error) {
       console.error(error)
       return error as ResponseError

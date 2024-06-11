@@ -1,8 +1,9 @@
 "use server"
 
 import { host } from "@/shared/server";
-import { ApplicationsResponse, ClustersResponse, SettingsResponse, VersionResponse } from "./types";
+import { ClustersResponse, SettingsResponse, VersionResponse } from "./types";
 import { ResponseError } from "@/shared/types";
+import { ApplicationList } from "@/shared/argocd";
 
 export async function fetchSettings(token: string): Promise<ResponseError | SettingsResponse> {
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
@@ -66,7 +67,7 @@ export async function fetchClusters(token: string): Promise<ResponseError | Clus
   }
 }
 
-export async function fetchApplications(token: string): Promise<ResponseError | ApplicationsResponse> {
+export async function listApplications(token: string): Promise<ResponseError | ApplicationList> {
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
   try {
@@ -80,7 +81,7 @@ export async function fetchApplications(token: string): Promise<ResponseError | 
       "method": "GET"
     });
     let result = await response.json()
-    return result as ApplicationsResponse
+    return result as ApplicationList
   } catch (error) {
     return error as ResponseError
   }
