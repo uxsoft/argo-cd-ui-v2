@@ -3,7 +3,7 @@
 import { host } from "@/shared/server";
 import { ClustersResponse, SettingsResponse, VersionResponse } from "./types";
 import { ResponseError } from "@/shared/types";
-import { ApplicationList, ProjectList } from "@/shared/argocd";
+import { Application, ApplicationList, ProjectList } from "@/shared/argocd";
 
 export async function fetchSettings(token: string): Promise<ResponseError | SettingsResponse> {
   process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
@@ -102,6 +102,26 @@ export async function listProjects(token: string): Promise<ResponseError | Proje
     });
     let result = await response.json()
     return result as ProjectList
+  } catch (error) {
+    return error as ResponseError
+  }
+}
+
+export async function createApplication(token: string, payload: Partial<Application>): Promise<ResponseError | Application> {
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+
+  try {
+    let response = await fetch(
+      `${host}/api/v1/applications`, {
+      "headers": {
+        "accept": "*/*",
+        "cookie": `argocd.token=${token}`,
+      },
+      "body": JSON.stringify(payload),
+      "method": "POST"
+    });
+    let result = await response.json()
+    return result as Application
   } catch (error) {
     return error as ResponseError
   }

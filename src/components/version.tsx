@@ -6,6 +6,12 @@ import { ResponseError, isResponseError } from "@/shared/types";
 import { useAtomValue } from "jotai";
 import * as Server from "../app/applications/server";
 import { useState, useEffect } from "react";
+import { atomWithQuery } from "jotai-tanstack-query";
+
+const todosAtom = atomWithQuery(() => ({
+    queryKey: ['todos'],
+}))
+
 
 export function Version() {
     const auth = useAtomValue(authAtom)
